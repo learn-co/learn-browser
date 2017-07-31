@@ -1,6 +1,6 @@
 {
   "name": "learn-browser",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Test Flatiron School's JavaScript curriculum with a browser-based Mocha runner.",
   "main": "learnBrowser.js",
   "scripts": {
@@ -9,12 +9,11 @@
   "repository": "git+https://github.com/gj/learn-browser.git",
   "keywords": [
     "learn.co",
-    "flatiron",
-    "school",
+    "flatiron school",
     "mocha",
     "chai",
     "sinon",
-    "browser"
+    "browser-sync"
   ],
   "author": "Flatiron School",
   "license": "MIT",

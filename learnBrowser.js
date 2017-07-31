@@ -1,4 +1,4 @@
-const LearnBrowser = function () {
+const LearnBrowser = (function () {
   let testCount = 0;
 
   const countTests = suites => {
@@ -86,18 +86,14 @@ const LearnBrowser = function () {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload),
-      mode: "no-cors"
+      mode: 'no-cors' // TODO: Add CORS headers to Ironbroker
     })
       .then(response => {
         if (response.ok) {
           // Parse response and print relevant data to student, such as a confirmed submission message
-        } else if (response.type === 'opaque') {
-          console.warn("'no-cors' mode enabled.")
-        } else {
-          console.error(response);
         }
       })
-      .catch(error => console.error(error));
+      .catch(error => console.warn('Unable to contact Learn servers. Please check your Internet connection and try again.'));
   }
 
   function formatTestOutput (test) {
@@ -125,4 +121,4 @@ const LearnBrowser = function () {
   return {
     test: test
   };
-}();
+})();
