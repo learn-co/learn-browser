@@ -1,4 +1,19 @@
 const LearnBrowser = function () {
+  let testCount = 0;
+
+  const countTests = suites => {
+    for (let i = 0; i < suites.length; i++) {
+      if (suites[i].suites.length) {
+        countTests(suites[i].suites)
+      } else {
+        testCount += suites[i].tests.length;
+      }
+    }
+  };
+
+  countTests(mocha.suite.suites);
+
+  // Build framework of results object
   const results = {
     build: {
       test_suite: [{
@@ -13,19 +28,23 @@ const LearnBrowser = function () {
     }
   };
 
-  // Shortcut
+  // Shortcut to access deeply-nested property
   const formatted_output = results.build.test_suite[0].formatted_output;
 
   function test () {
     const runner = mocha.run()
       .on('test end', test => sortTest(test))
       .on('end', () => {
-        if (runner._grep.toString() === '/.*/') {
+        if (!['http:', 'https:'].includes(window.location.protocol)) {
+          console.warn("In order to push test data to Learn's servers, you must start the test suite from your terminal with the 'learn' command.");
+        } else {
+          if (runner.total !== testCount) {
+            console.warn(`${runner.total} out of ${testCount} tests ran.`);
+          }
+
           addCountingStats(runner);
 
           pushResults(results);
-        } else {
-          console.warn('Not all tests ran. Not pushing data to Learn.');
         }
       });
   }
@@ -44,7 +63,7 @@ const LearnBrowser = function () {
   }
 
   function addCountingStats (runner) {
-    results.examples = runner.total;
+    results.examples = testCount;
     results.passing_count = runner.stats.passes;
     results.failure_count = runner.stats.failures;
     results.pending_count = runner.stats.pending;
@@ -57,7 +76,7 @@ const LearnBrowser = function () {
       .then(authFile => authFile.json())
       .then(authData => Object.assign({}, authData, testResults))
       .then(payload => postPayload(payload))
-      .catch(error => console.error(error));
+      .catch(error => console.warn('Could not load user auth data. Not pushing results to Learn.'));
   }
 
   function postPayload(payload) {
