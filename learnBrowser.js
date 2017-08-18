@@ -39,7 +39,11 @@ const LearnBrowser = (function () {
           console.warn("In order to push test data to Learn's servers, you must start the test suite from your terminal with the 'learn' or 'npm test' command.");
         } else {
           if (runner.total !== testCount) {
-            console.warn(`${runner.total} out of ${testCount} tests ran.`);
+            if (runner.total) {
+              console.warn(`${runner.total} out of ${testCount} tests ran.`);
+            } else {
+              console.warn('Make sure the LearnBrowser JS file is loaded *after* the test suite in index.html.');
+            }
           }
 
           addCountingStats(runner);
