@@ -1,4 +1,4 @@
-const LearnBrowser = (function () {
+(function () {
   let testCount = 0;
 
   const countTests = suites => {
@@ -130,7 +130,6 @@ const LearnBrowser = (function () {
     return fullTitle;
   }
 
-  return {
-    test: test
-  };
+  // Run the test suite
+  test();
 })();
