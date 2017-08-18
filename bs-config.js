@@ -1,3 +1,5 @@
+const fs = require('fs');
+const os = require('os');
 
 /*
  |--------------------------------------------------------------------------
@@ -12,6 +14,23 @@
  |
  |
  */
+
+// Grab the necessary info from ~/.netrc
+let learnOAuthToken, githubUsername, githubUserID;
+
+(function getAuthData () {
+  const netrc = fs.readFileSync(os.homedir() + '/.netrc', 'utf8');
+
+  const tokenStart = netrc.indexOf('login learn\n  password ') + 23;
+  learnOAuthToken = netrc.slice(tokenStart, tokenStart + 64);
+
+  const githubStart = netrc.indexOf('flatiron-push\n  login ') + 22;
+  const githubInfo = netrc.slice(githubStart).match(/(.+)\D+(\d+)/);
+
+  githubUsername = githubInfo[1];
+  githubUserID = githubInfo[2];
+})();
+
 module.exports = {
     "ui": false,
     "files": ['**/*.js'],
@@ -71,8 +90,16 @@ module.exports = {
         "socketIoOptions": {
             "log": false
         },
+
+        // Pass the ~/.netrc info to the browser via this config object
         "socketIoClientConfig": {
-            "reconnectionAttempts": 50
+            "reconnectionAttempts": 50,
+            "username": githubUsername,
+            "github_user_id": githubUserID,
+            "learn_oauth_token": learnOAuthToken,
+            "repo_name": process.cwd().match(/[^/]+$/)[0],
+            "ruby_platform": process.env.RUBY_PLATFORM,
+            "ide_container": process.env.IDE_CONTAINER === 'true'
         },
         "path": "/browser-sync/socket.io",
         "clientPath": "/browser-sync",

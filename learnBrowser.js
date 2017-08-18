@@ -44,7 +44,8 @@ const LearnBrowser = (function () {
 
           addCountingStats(runner);
 
-          pushResults(results);
+          const payload = createPayload(results);
+          postPayload(payload);
         }
       });
   }
@@ -71,12 +72,19 @@ const LearnBrowser = (function () {
     results.build.test_suite[0].duration = runner.stats;
   }
 
-  function pushResults (testResults) {
-    fetch('learn.auth.data.json')
-      .then(authFile => authFile.json())
-      .then(authData => Object.assign({}, authData, testResults))
-      .then(payload => postPayload(payload))
-      .catch(error => console.warn('Could not load user auth data. Not pushing results to Learn.'));
+  function createPayload (testResults) {
+    const data = ___browserSync___.socketConfig;
+
+    const authData = {
+      username: data.username,
+      github_user_id: data.github_user_id,
+      learn_oauth_token: data.learn_oauth,
+      repo_name: data.repo_name,
+      ruby_platform: data.ruby_platform,
+      ide_container: data.ide_container
+    };
+
+    return Object.assign({}, authData, testResults);
   }
 
   function postPayload(payload) {
