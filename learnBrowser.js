@@ -36,7 +36,7 @@ const LearnBrowser = (function () {
       .on('test end', test => sortTest(test))
       .on('end', () => {
         if (!['http:', 'https:'].includes(window.location.protocol)) {
-          console.warn("In order to push test data to Learn's servers, you must start the test suite from your terminal with the 'learn' command.");
+          console.warn("In order to push test data to Learn's servers, you must start the test suite from your terminal with the 'learn' or 'npm test' command.");
         } else {
           if (runner.total !== testCount) {
             console.warn(`${runner.total} out of ${testCount} tests ran.`);
