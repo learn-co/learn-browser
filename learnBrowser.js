@@ -100,11 +100,7 @@ window.onload = (function () {
       body: JSON.stringify(payload),
       mode: 'no-cors' // TODO: Add CORS headers to Ironbroker
     })
-      .then(response => {
-        if (response.ok) {
-          // Parse response and print relevant data to student, such as a confirmed submission message
-        }
-      })
+      .then(response => { /* noop */ })
       .catch(error => console.warn('Unable to contact Learn servers. Please check your Internet connection and try again.'));
   }
 
