@@ -1,4 +1,4 @@
-(function () {
+window.onload = (function () {
   let testCount = 0;
 
   const countTests = suites => {
@@ -31,7 +31,7 @@
   // Shortcut to access deeply-nested property
   const formatted_output = results.build.test_suite[0].formatted_output;
 
-  function test () {
+  function runTests () {
     const runner = mocha.run()
       .on('test end', test => sortTest(test))
       .on('end', () => {
@@ -130,6 +130,5 @@
     return fullTitle;
   }
 
-  // Run the test suite
-  test();
+  return () => runTests();
 })();
