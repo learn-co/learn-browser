@@ -1,6 +1,6 @@
 {
   "name": "learn-browser",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Test Flatiron School's JavaScript curriculum with a browser-based Mocha runner.",
   "main": "learnBrowser.js",
   "scripts": {
