@@ -54,7 +54,7 @@ module.exports = {
     "logFileChanges": false,
     "logSnippet": false,
     "rewriteRules": [],
-    "open": process.env.IDE_CONTAINER === 'true' ? false : 'local',
+    "open": !process.env.IDE_CONTAINER && 'local',
     "browser": "default",
     "cors": false,
     "xip": false,
@@ -99,7 +99,7 @@ module.exports = {
             "learn_oauth_token": learnOAuthToken,
             "repo_name": process.env.LAB_NAME || process.cwd().match(/[^/]+$/)[0],
             "ruby_platform": process.env.RUBY_PLATFORM,
-            "ide_container": process.env.IDE_CONTAINER === 'true'
+            "ide_container": !!process.env.IDE_CONTAINER
         },
         "path": "/browser-sync/socket.io",
         "clientPath": "/browser-sync",
