@@ -97,7 +97,7 @@ module.exports = {
             "username": githubUsername,
             "github_user_id": githubUserID,
             "learn_oauth_token": learnOAuthToken,
-            "repo_name": process.cwd().match(/[^/]+$/)[0],
+            "repo_name": process.env.LAB_NAME || process.cwd().match(/[^/]+$/)[0],
             "ruby_platform": process.env.RUBY_PLATFORM,
             "ide_container": process.env.IDE_CONTAINER === 'true'
         },
