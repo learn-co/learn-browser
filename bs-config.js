@@ -73,7 +73,7 @@ module.exports = {
     "injectChanges": true,
     "startPath": null,
     "minify": false,
-    "host": null,
+    "host": process.env.HOST_IP || null,
     "localOnly": false,
     "codeSync": true,
     "timestamps": true,
