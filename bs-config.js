@@ -19,16 +19,21 @@ const os = require('os');
 let learnOAuthToken, githubUsername, githubUserID;
 
 (function getAuthData () {
-  const netrc = fs.readFileSync(os.homedir() + '/.netrc', 'utf8');
+  try {
+    const netrc = fs.readFileSync(os.homedir() + '/.netrc', 'utf8');
 
-  const tokenStart = netrc.indexOf('login learn\n  password ') + 23;
-  learnOAuthToken = netrc.slice(tokenStart, tokenStart + 64);
+    const tokenStart = netrc.indexOf('login learn\n  password ') + 23;
+    learnOAuthToken = netrc.slice(tokenStart, tokenStart + 64);
 
-  const githubStart = netrc.indexOf('flatiron-push\n  login ') + 22;
-  const githubInfo = netrc.slice(githubStart).match(/(.+)\D+(\d+)/);
-
-  githubUsername = githubInfo[1];
-  githubUserID = githubInfo[2];
+    const githubStart = netrc.indexOf('flatiron-push\n  login ') + 22;
+    const githubInfo = netrc.slice(githubStart).match(/^([\dA-Za-z][\dA-Za-z-]{0,38})\D+(\d+)/);
+    githubUsername = githubInfo[1];
+    githubUserID = githubInfo[2];
+  } catch (e) {
+    console.warn("Unable to parse .netrc file. Please run the 'learn whoami' command to ensure");
+    console.warn("that you are authenticated. Use Ask a Question on Learn.co for additional help.");
+    process.exit(1);
+  }
 })();
 
 module.exports = {
