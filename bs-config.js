@@ -48,7 +48,7 @@ module.exports = {
     },
     "server": true,
     "proxy": false,
-    "port": process.env.MOCHA_PORT || process.env.PORT || 8000,
+    "port": process.env.PORT || 8000,
     "middleware": false,
     "serveStatic": [],
     "ghostMode": false,
