@@ -1,12 +1,15 @@
 window.onload = (function () {
+  // Tally up tests on our own since Mocha doesn't include grepped out tests in its count.
   let testCount = 0;
 
   const countTests = suites => {
-    for (let i = 0; i < suites.length; i++) {
-      if (suites[i].suites.length) {
-        countTests(suites[i].suites)
-      } else {
-        testCount += suites[i].tests.length;
+    for (const suite of suites) {
+      if (suite.tests) {
+        testCount += suite.tests.length;
+      }
+
+      if (suite.suites && suite.suites.length) {
+        countTests(suite.suites);
       }
     }
   };
@@ -29,7 +32,7 @@ window.onload = (function () {
   };
 
   // Shortcut to access deeply-nested property
-  const formatted_output = results.build.test_suite[0].formatted_output;
+  const { formatted_output } = results.build.test_suite[0];
 
   function runTests () {
     const runner = mocha.run()
