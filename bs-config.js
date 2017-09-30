@@ -120,7 +120,7 @@ module.exports = {
             "github_user_id": githubUserID,
             "learn_oauth_token": learnOAuthToken,
             "repo_name": process.env.LAB_NAME || process.cwd().match(/[^/]+$/)[0],
-            "ruby_platform": process.env.RUBY_PLATFORM,
+            "ruby_platform": process.env.RUBY_PLATFORM || process.env.RUBY_VERSION || process.env.GEM_HOME && process.env.GEM_HOME.match(/[^/]*$/)[0],
             "ide_container": !!process.env.IDE_CONTAINER
         },
         "path": "/browser-sync/socket.io",
