@@ -1,4 +1,10 @@
 window.onload = (function () {
+  const IRONBROKER = 'http://ironbroker-v2.flatironschool.com/e/flatiron_mocha';
+
+  const LOAD_ORDER_ERROR = 'Make sure the LearnBrowser JS file is loaded *after* the test suite in index.html.';
+  const NO_BROWSERSYNC_ERROR = "In order to push test data to Learn's servers, you must start the test suite from your terminal with the 'learn' or 'npm test' command.";
+  const CONNECTION_ERROR = 'Unable to contact Learn servers. Please check your Internet connection and try again.';
+
   // Tally up tests on our own since Mocha doesn't include grepped out tests in its count.
   let testCount = 0;
 
@@ -43,7 +49,7 @@ window.onload = (function () {
             if (runner.total) {
               console.warn(`${runner.total} out of ${testCount} tests ran.`);
             } else {
-              console.warn('Make sure the LearnBrowser JS file is loaded *after* the test suite in index.html.');
+              console.warn(LOAD_ORDER_ERROR);
             }
           }
 
@@ -53,7 +59,7 @@ window.onload = (function () {
 
           postPayload(payload);
         } else {
-          console.warn("In order to push test data to Learn's servers, you must start the test suite from your terminal with the 'learn' or 'npm test' command.");
+          console.warn(NO_BROWSERSYNC_ERROR);
         }
       });
   };
@@ -94,16 +100,14 @@ window.onload = (function () {
     ide_container
   });
 
-  const postPayload = payload => fetch('http://ironbroker-v2.flatironschool.com/e/flatiron_mocha', {
+  const postPayload = payload => fetch(IRONBROKER, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
       mode: 'no-cors' // TODO: Add CORS headers to Ironbroker
     })
-    .then(response => { /* noop */ })
-    .catch(error => console.warn('Unable to contact Learn servers. Please check your Internet connection and try again.'));
+    .then(response => { /* no-op until CORS headers are added to Ironbroker and it returns a response object */ })
+    .catch(e => console.warn(CONNECTION_ERROR));
 
   const formatTestOutput = ({ title, parent, duration, _currentRetry: currentRetry, err }) => ({
     title,
