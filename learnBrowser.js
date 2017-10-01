@@ -34,7 +34,7 @@ window.onload = (function () {
   // Shortcut to access deeply-nested property
   const { formatted_output } = results.build.test_suite[0];
 
-  function runTests () {
+  const runTests = () => {
     const runner = mocha.run()
       .on('test end', test => sortTest(test))
       .on('end', () => {
@@ -49,53 +49,52 @@ window.onload = (function () {
 
           addCountingStats(runner);
 
-          const payload = createPayload(results);
+          const payload = createPayload(results, ___browserSync___.socketConfig);
+
           postPayload(payload);
         } else {
           console.warn("In order to push test data to Learn's servers, you must start the test suite from your terminal with the 'learn' or 'npm test' command.");
         }
       });
-  }
+  };
 
-  function sortTest (test) {
+  const sortTest = test => {
     const formattedTestOutput = formatTestOutput(test);
+
     formatted_output.tests.push(formattedTestOutput);
 
-    if (test.pending) {
-      formatted_output.pending.push(formattedTestOutput);
-    } else if (test.state === 'passed') {
-      formatted_output.passes.push(formattedTestOutput);
-    } else if (test.state === 'failed') {
-      formatted_output.failures.push(formattedTestOutput);
+    switch (true) {
+      case test.state === 'failed':
+        formatted_output.failures.push(formattedTestOutput);
+        break;
+      case test.state === 'passed':
+        formatted_output.passes.push(formattedTestOutput);
+        break;
+      case test.pending:
+        formatted_output.pending.push(formattedTestOutput);
+        break;
     }
-  }
+  };
 
-  function addCountingStats (runner) {
+  const addCountingStats = ({ stats }) => {
     results.examples = testCount;
-    results.passing_count = runner.stats.passes;
-    results.failure_count = runner.stats.failures;
-    results.pending_count = runner.stats.pending;
-    formatted_output.stats = runner.stats;
-    results.build.test_suite[0].duration = runner.stats;
-  }
+    results.passing_count = stats.passes;
+    results.failure_count = stats.failures;
+    results.pending_count = stats.pending;
+    formatted_output.stats = stats;
+    results.build.test_suite[0].duration = stats;
+  };
 
-  function createPayload (testResults) {
-    const data = ___browserSync___.socketConfig;
+  const createPayload = (results, { username, github_user_id, learn_oauth_token, repo_name, ruby_platform, ide_container }) => Object.assign({}, results, {
+    username,
+    github_user_id,
+    learn_oauth_token,
+    repo_name,
+    ruby_platform,
+    ide_container
+  });
 
-    const authData = {
-      username: data.username,
-      github_user_id: data.github_user_id,
-      learn_oauth_token: data.learn_oauth,
-      repo_name: data.repo_name,
-      ruby_platform: data.ruby_platform,
-      ide_container: data.ide_container
-    };
-
-    return Object.assign({}, authData, testResults);
-  }
-
-  function postPayload(payload) {
-    fetch('http://ironbroker-v2.flatironschool.com/e/flatiron_mocha', {
+  const postPayload = payload => fetch('http://ironbroker-v2.flatironschool.com/e/flatiron_mocha', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -103,31 +102,25 @@ window.onload = (function () {
       body: JSON.stringify(payload),
       mode: 'no-cors' // TODO: Add CORS headers to Ironbroker
     })
-      .then(response => { /* noop */ })
-      .catch(error => console.warn('Unable to contact Learn servers. Please check your Internet connection and try again.'));
-  }
+    .then(response => { /* noop */ })
+    .catch(error => console.warn('Unable to contact Learn servers. Please check your Internet connection and try again.'));
 
-  function formatTestOutput (test) {
-    return {
-      title: test.title,
-      fullTitle: getFullTitle(test),
-      duration: test.duration,
-      currentRetry: test._currentRetry,
-      err: test.err
-    };
-  }
+  const formatTestOutput = ({ title, parent, duration, _currentRetry: currentRetry, err }) => ({
+    title,
+    fullTitle: getFullTitle(title, parent),
+    duration,
+    currentRetry,
+    err
+  });
 
-  function getFullTitle (test) {
-    let fullTitle = test.title;
-    let parent = test.parent;
-
+  const getFullTitle = (title, parent) => {
     while (parent && parent.constructor.name === 'Suite') {
-      fullTitle = parent.title.concat(' ', fullTitle);
+      title = parent.title.concat(' ', title);
       parent = parent.parent;
     }
 
-    return fullTitle;
-  }
+    return title.trim();
+  };
 
   return () => runTests();
 })();
