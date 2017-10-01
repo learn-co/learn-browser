@@ -2,20 +2,6 @@ const fs = require('fs');
 const os = require('os');
 const util = require('util');
 
-/*
- |--------------------------------------------------------------------------
- | Browser-sync config file
- |--------------------------------------------------------------------------
- |
- | For up-to-date information about the options:
- |   http://www.browsersync.io/docs/options/
- |
- | There are more options than you see here, these are just the ones that are
- | set internally. See the website for more info.
- |
- |
- */
-
 // Grab the necessary info from ~/.netrc
 let learnOAuthToken, githubUsername, githubUserID;
 
@@ -27,9 +13,7 @@ let learnOAuthToken, githubUsername, githubUserID;
     learnOAuthToken = netrc.slice(tokenStart, tokenStart + 64);
 
     const githubStart = netrc.indexOf('flatiron-push\n  login ') + 22;
-    const githubInfo = netrc.slice(githubStart).match(/^([\dA-Za-z][\dA-Za-z-]{0,38})\D+(\d+)/);
-    githubUsername = githubInfo[1];
-    githubUserID = githubInfo[2];
+    [, githubUsername, githubUserID] = netrc.slice(githubStart).match(/^([\dA-Za-z][\dA-Za-z-]{0,38})\D+(\d+)/);
   } catch (e) {
     console.warn("Unable to parse .netrc file. Please run the 'learn whoami' command to ensure");
     console.warn("that you are authenticated. Use Ask a Question on Learn.co for additional help.");
@@ -43,13 +27,13 @@ setTimeout(() => {
   const colorizedTestingAddress = util.inspect(`http://${process.env.HOST_IP || 'localhost'}:${process.env.MOCHA_PORT || process.env.PORT || 8000}`, { colors: true }).replace(/['"]/g, '');
 
   util.inspect.styles.string = 'red';
-  const setupMessage1 = util.inspect('Navigate to', { colors: true }).replace(/['"]/g, '');
-  const setupMessage2 = util.inspect('in your browser to run the test suite.', { colors: true }).replace(/['"]/g, '');
+  const setupMessageStart = util.inspect('Navigate to', { colors: true }).replace(/['"]/g, '');
+  const setupMessageEnd = util.inspect('in your browser to run the test suite.', { colors: true }).replace(/['"]/g, '');
   const exitMessage = util.inspect('To exit the test suite and return to your terminal, press Control-C.', { colors: true }).replace(/['"]/g, '');
 
-  console.log(setupMessage1, colorizedTestingAddress, setupMessage2);
+  console.log(setupMessageStart, colorizedTestingAddress, setupMessageEnd);
   console.log('As you write code in index.js, save your work often. With each save, the browser');
-  console.log('will automatically refresh and rerun the test suite against your updated code.')
+  console.log('will automatically refresh and rerun the test suite against your updated code.');
   console.log(exitMessage);
 }, 0);
 
