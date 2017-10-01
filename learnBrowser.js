@@ -96,7 +96,6 @@ window.onload = (function () {
       body: JSON.stringify(payload),
       mode: 'no-cors' // TODO: Add CORS headers to Ironbroker
     })
-    .then(response => { /* no-op until CORS headers are added to Ironbroker and it returns a response object */ })
     .catch(e => console.warn(CONNECTION_ERROR));
 
   const formatTestOutput = ({ title, parent, duration, _currentRetry: currentRetry, err }) => ({
