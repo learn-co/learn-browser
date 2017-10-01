@@ -6,23 +6,17 @@ window.onload = (function () {
   const CONNECTION_ERROR = 'Unable to contact Learn servers. Please check your Internet connection and try again.';
 
   // Tally up tests on our own since Mocha doesn't include grepped out tests in its count.
-  let testCount = 0;
-
-  const countTests = suites => {
-    for (const suite of suites) {
-      if (suite.tests) {
-        testCount += suite.tests.length;
-      }
-
-      if (suite.suites && suite.suites.length) {
-        countTests(suite.suites);
-      }
+  const countTests = (suite, count) => {
+    for (const s of suite.suites) {
+      count = countTests(s, count);
     }
-  };
 
-  countTests(mocha.suite.suites);
+    return count += suite.tests.length;
+  }
 
-  // Build framework of results object
+  const testCount = countTests(mocha.suite, 0);
+
+  // Build results object to match our existing Node-based Mocha results
   const results = {
     build: {
       test_suite: [{
@@ -40,44 +34,40 @@ window.onload = (function () {
   // Shortcut to access deeply-nested property
   const { formatted_output } = results.build.test_suite[0];
 
-  const runTests = () => {
-    const runner = mocha.run()
-      .on('test end', test => sortTest(test))
-      .on('end', () => {
-        if (___browserSync___) {
-          if (runner.total !== testCount) {
-            if (runner.total) {
-              console.warn(`${runner.total} out of ${testCount} tests ran.`);
-            } else {
-              console.warn(LOAD_ORDER_ERROR);
-            }
-          }
+  const runTests = mochaRunner => {
+    const runner = mochaRunner.run()
+      .on('test end', test => sortTest(formatTestOutput(test)))
+      .on('end', () => prepareResults(runner));
+  };
 
-          addCountingStats(runner);
+  const prepareResults = runner => {
+    if (___browserSync___ === undefined) {
+      console.warn(NO_BROWSERSYNC_ERROR);
+    } else if (runner.total === 0) {
+      console.warn(LOAD_ORDER_ERROR);
+    } else if (runner.total !== testCount) {
+      console.warn(`${runner.total} out of ${testCount} tests ran.`);
+    } else {
+      addCountingStats(runner);
 
-          const payload = createPayload(results, ___browserSync___.socketConfig);
+      const payload = createPayload(results, ___browserSync___.socketConfig);
 
-          postPayload(payload);
-        } else {
-          console.warn(NO_BROWSERSYNC_ERROR);
-        }
-      });
+      postPayload(payload);
+    }
   };
 
   const sortTest = test => {
-    const formattedTestOutput = formatTestOutput(test);
-
-    formatted_output.tests.push(formattedTestOutput);
+    formatted_output.tests.push(test);
 
     switch (true) {
       case test.state === 'failed':
-        formatted_output.failures.push(formattedTestOutput);
+        formatted_output.failures.push(test);
         break;
       case test.state === 'passed':
-        formatted_output.passes.push(formattedTestOutput);
+        formatted_output.passes.push(test);
         break;
       case test.pending:
-        formatted_output.pending.push(formattedTestOutput);
+        formatted_output.pending.push(test);
         break;
     }
   };
@@ -126,5 +116,5 @@ window.onload = (function () {
     return title.trim();
   };
 
-  return () => runTests();
+  return () => runTests(mocha);
 })();
