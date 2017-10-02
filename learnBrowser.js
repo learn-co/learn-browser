@@ -1,4 +1,16 @@
 window.onload = (function () {
+  // Check that index.html is set up correctly.
+  const mochaDiv = document.getElementById('mocha');
+
+  if (mochaDiv === null) throw new Error('Check that a div#mocha element exists in the <body> in index.html.');
+
+  if (mocha === mochaDiv) throw new Error('Check that Mocha is added via a <script> tag in index.html.');
+
+  if (window.describe === undefined) throw new Error('Check that Mocha is set up for BDD-style testing in index.html.');
+
+  if (window.chai === undefined) throw new Error('Please use Chai as the matchers library for testing Learn.co JavaScript lessons.');
+
+  // Create constants.
   const IRONBROKER = 'http://ironbroker-v2.flatironschool.com/e/flatiron_mocha';
 
   const LOAD_ORDER_ERROR = 'Make sure the LearnBrowser JS file is loaded *after* the test suite in index.html.';
@@ -16,7 +28,7 @@ window.onload = (function () {
 
   const testCount = countTests(mocha.suite, 0);
 
-  // Build results object to match our existing Node-based Mocha results
+  // Build results object to match our existing Node-based Mocha results.
   const results = {
     build: {
       test_suite: [{
@@ -34,8 +46,8 @@ window.onload = (function () {
   // Shortcut to access deeply-nested property
   const { formatted_output } = results.build.test_suite[0];
 
-  const runTests = mochaRunner => {
-    const runner = mochaRunner.run()
+  const runTests = () => {
+    const runner = mocha.run()
       .on('test end', test => sortTest(formatTestOutput(test)))
       .on('end', () => prepareResults(runner));
   };
@@ -115,5 +127,5 @@ window.onload = (function () {
     return title.trim();
   };
 
-  return () => runTests(mocha);
+  return () => runTests();
 })();
