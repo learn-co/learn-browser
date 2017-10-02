@@ -2,24 +2,39 @@ const fs = require('fs');
 const os = require('os');
 const util = require('util');
 
-// Grab the necessary info from ~/.netrc
-let learnOAuthToken, githubUsername, githubUserID;
+// Messages
+const NETRC_ERROR = "Unable to parse .netrc file. Please run the 'learn whoami' command to ensure that you are authenticated. Use Ask a Question on Learn.co for additional help.";
+const SAVE_MESSAGE_1 = 'As you write code in index.js, save your work often. With each save, the browser';
+const SAVE_MESSAGE_2 = 'will automatically refresh and rerun the test suite against your updated code.';
 
-(function getAuthData () {
+const getToken = netrc => {
+    const tokenStart = netrc.indexOf('login learn\n  password ') + 23;
+
+    return netrc.slice(tokenStart, tokenStart + 64);
+};
+
+const getGitHubInfo = netrc => {
+    const githubStart = netrc.indexOf('flatiron-push\n  login ') + 22;
+
+    const matchData = netrc.slice(githubStart).match(/^([\dA-Za-z][\dA-Za-z-]{0,38})\D+(\d+)/);
+
+    return matchData.slice(1, 3);
+};
+
+// Grab the necessary info from ~/.netrc
+const getAuthData = () => {
   try {
     const netrc = fs.readFileSync(os.homedir() + '/.netrc', 'utf8');
 
-    const tokenStart = netrc.indexOf('login learn\n  password ') + 23;
-    learnOAuthToken = netrc.slice(tokenStart, tokenStart + 64);
-
-    const githubStart = netrc.indexOf('flatiron-push\n  login ') + 22;
-    [, githubUsername, githubUserID] = netrc.slice(githubStart).match(/^([\dA-Za-z][\dA-Za-z-]{0,38})\D+(\d+)/);
+    return [getToken(netrc), ...getGitHubInfo(netrc)];
   } catch (e) {
-    console.warn("Unable to parse .netrc file. Please run the 'learn whoami' command to ensure");
-    console.warn("that you are authenticated. Use Ask a Question on Learn.co for additional help.");
+    console.warn(NETRC_ERROR);
+
     process.exit(1);
   }
-})();
+};
+
+const [learnOAuthToken, githubUsername, githubID] = getAuthData();
 
 // Colorize me, cap'n!
 setTimeout(() => {
@@ -32,8 +47,8 @@ setTimeout(() => {
   const exitMessage = util.inspect('To exit the test suite and return to your terminal, press Control-C.', { colors: true }).replace(/['"]/g, '');
 
   console.log(setupMessageStart, colorizedTestingAddress, setupMessageEnd);
-  console.log('As you write code in index.js, save your work often. With each save, the browser');
-  console.log('will automatically refresh and rerun the test suite against your updated code.');
+  console.log(SAVE_MESSAGE_1);
+  console.log(SAVE_MESSAGE_2);
   console.log(exitMessage);
 }, 0);
 
@@ -73,8 +88,8 @@ module.exports = {
     "scrollElements": [],
     "scrollElementMapping": [],
     "reloadDelay": 0,
-    "reloadDebounce": 2000,
-    "reloadThrottle": 2000,
+    "reloadDebounce": 1000,
+    "reloadThrottle": 1000,
     "plugins": [],
     "injectChanges": true,
     "startPath": null,
@@ -83,15 +98,7 @@ module.exports = {
     "localOnly": false,
     "codeSync": true,
     "timestamps": true,
-    "clientEvents": [
-        "scroll",
-        "scroll:element",
-        "input:text",
-        "input:toggles",
-        "form:submit",
-        "form:reset",
-        "click"
-    ],
+    "clientEvents": [],
     "socket": {
         "socketIoOptions": {
             "log": false
@@ -99,9 +106,9 @@ module.exports = {
 
         // Pass the ~/.netrc info to the browser via this config object
         "socketIoClientConfig": {
-            "reconnectionAttempts": 50,
+            "reconnectionAttempts": 1,
             "username": githubUsername,
-            "github_user_id": githubUserID,
+            "github_user_id": githubID,
             "learn_oauth_token": learnOAuthToken,
             "repo_name": process.env.LAB_NAME || process.cwd().match(/[^/]+$/)[0],
             "ruby_platform": process.env.RUBY_PLATFORM || process.env.RUBY_VERSION || process.env.GEM_HOME && process.env.GEM_HOME.match(/[^/]*$/)[0],
