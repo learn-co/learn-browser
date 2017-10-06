@@ -19,7 +19,7 @@ yarn add learn-browser
 
 or with NPM:
 ```bash
-npm i learn-browser
+npm i --save learn-browser
 ```
 
 ## Usage
