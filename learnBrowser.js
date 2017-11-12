@@ -93,13 +93,14 @@ window.onload = (function () {
     results.build.test_suite[0].duration = stats;
   };
 
-  const createPayload = (results, { username, github_user_id, learn_oauth_token, repo_name, ruby_platform, ide_container }) => Object.assign({}, results, {
+  const createPayload = (results, { username, github_user_id, learn_oauth_token, repo_name, ruby_platform, ide_container, learning_environment }) => Object.assign({}, results, {
     username,
     github_user_id,
     learn_oauth_token,
     repo_name,
     ruby_platform,
-    ide_container
+    ide_container,
+    learning_environment
   });
 
   const postPayload = payload => fetch(IRONBROKER, {

@@ -112,7 +112,8 @@ module.exports = {
             "learn_oauth_token": learnOAuthToken,
             "repo_name": process.env.LAB_NAME || process.cwd().match(/[^/]+$/)[0],
             "ruby_platform": process.env.RUBY_PLATFORM || process.env.RUBY_VERSION || process.env.GEM_HOME && process.env.GEM_HOME.match(/[^/]*$/)[0],
-            "ide_container": !!process.env.IDE_CONTAINER
+            "ide_container": !!process.env.IDE_CONTAINER,
+            "learning_environment": process.env.LEARNING_ENVIRONMENT || 'local'
         },
         "path": "/browser-sync/socket.io",
         "clientPath": "/browser-sync",
