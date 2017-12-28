@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/learn-co/learn-browser#readme",
   "dependencies": {
-    "browser-sync": "^2.18.13",
-    "chai": "^4.1.0",
-    "mocha": "^3.4.2",
-    "sinon": "^2.3.8"
+    "browser-sync": "~2.18.13",
+    "chai": "~4.1.0",
+    "mocha": "~3.4.2",
+    "sinon": "~2.3.8"
   }
 }
