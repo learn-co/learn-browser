@@ -8,17 +8,13 @@ const SAVE_MESSAGE_1 = 'As you write code in index.js, save your work often. Wit
 const SAVE_MESSAGE_2 = 'will automatically refresh and rerun the test suite against your updated code.';
 
 const getToken = netrc => {
-    const tokenStart = netrc.indexOf('login learn\n  password ') + 23;
-
-    return netrc.slice(tokenStart, tokenStart + 64);
+    const re = /machine learn-config[^\w]*login [\dA-Za-z][\dA-Za-z-]{0,38}[^\w]+password ([\dA-Fa-f]{64})/;
+    return netrc.match(re)[1];
 };
 
 const getGitHubInfo = netrc => {
-    const githubStart = netrc.indexOf('flatiron-push\n  login ') + 22;
-
-    const matchData = netrc.slice(githubStart).match(/^([\dA-Za-z][\dA-Za-z-]{0,38})\D+(\d+)/);
-
-    return matchData.slice(1, 3);
+    const re = /machine flatiron-push[^\w]*login ([\dA-Za-z][\dA-Za-z-]{0,38})[^\w]+password (\d+)/;
+    return netrc.match(re).slice(1, 3);
 };
 
 // Grab the necessary info from ~/.netrc
