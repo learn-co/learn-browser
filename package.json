@@ -1,6 +1,6 @@
 {
   "name": "learn-browser",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Test Flatiron School's JavaScript curriculum with a browser-based Mocha runner.",
   "main": "learnBrowser.js",
   "repository": "git+https://github.com/learn-co/learn-browser.git",
